@@ -1,5 +1,4 @@
-package maquinaExp;
-
+package banco;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -7,165 +6,218 @@ import java.util.Scanner;
 public class principal {
 
     public static void main(String[] args) {
-        dispensadorDeAlimentos dispensador = new dispensadorDeAlimentos();
+        Banco banco = new Banco();
         Scanner scanner = new Scanner(System.in);
         int opcion;
         do {
             System.out.println("Menú:");
-            System.out.println("1. Agregar producto");
-            System.out.println("2. Elegir producto");
-            System.out.println("3. Imprimir estado");
-            System.out.println("4. Salir");
+            System.out.println("1. Agregar cliente con cuenta");
+            System.out.println("2. Agregar cliente sin cuenta");
+            System.out.println("3. Atender cliente");
+            System.out.println("4. Ingresar dinero a caja");
+            System.out.println("5. Imprimir estado");
+            System.out.println("6. Salir");
             System.out.print("Elige una opción: ");
             opcion = scanner.nextInt();
 
             switch (opcion) {
                 case 1:
-                    System.out.print("Ingresa el nombre del producto: ");
-                    String nombre = scanner.next();
-                    int cantidad = 0;
-                    System.out.print("Ingresa la cantidad del producto (máximo 10): ");
-                    cantidad = scanner.nextInt();
-                    if (cantidad > 10) {
-                        while (cantidad > 10) {
-                            System.out.print("Ingresa la cantidad del producto (máximo 10): ");
-                            cantidad = scanner.nextInt();
-                        }
-                    }
-                    System.out.print("Ingresa el valor de monedas del producto: ");
-                    double valor = scanner.nextDouble();
-                    dispensador.agregarProducto(new Producto(nombre, cantidad, valor));
+                    banco.agregarCliente(new Cliente(true));
                     break;
                 case 2:
-                    dispensador.mostrarProductos();
-                    System.out.print("Elige el número del producto: ");
-                    int numProducto = scanner.nextInt();
-                    System.out.print("Ingresa el monto: ");
-                    double monto = scanner.nextDouble();
-                    dispensador.elegirProducto(numProducto, monto);
+                    banco.agregarCliente(new Cliente(false));
                     break;
                 case 3:
-                    dispensador.imprimirEstado();
+                    banco.mostrarClientes();
+                    System.out.print("Ingresa el número del cliente a atender: ");
+                    int numCliente = scanner.nextInt();
+                    System.out.print("Elige la caja (1-4): ");
+                    int numCaja = scanner.nextInt();
+                    banco.atenderCliente(numCliente, numCaja);
                     break;
                 case 4:
-                    System.out.println("Adios...");
+                    System.out.print("Elige la caja (1-4): ");
+                    int cajaNum = scanner.nextInt();
+                    System.out.print("Ingresa el tipo de billete/moneda: ");
+                    double tipo = scanner.nextDouble();
+                    System.out.print("Ingresa la cantidad: ");
+                    int cantidad = scanner.nextInt();
+                    banco.ingresarDineroCaja(cajaNum, tipo, cantidad);
+                    break;
+                case 5:
+                    banco.imprimirEstado();
+                    break;
+                case 6:
+                    System.out.println("Saliendo...");
                     break;
                 default:
-                    System.out.println("Opción inválida.");
+                    System.out.println("Opción no válida.");
             }
-        } while (opcion != 4);
+        } while (opcion != 6);
         scanner.close();
     }
 }
 
-class Producto { //Le junte las clases en el main
-    String nombre;
-    int cantidad;
-    double valor;
+class Cliente {//Le junte las clases en el main
+    boolean tieneCuenta;
+    int id;
+    static int idCounter = 1;
 
-    Producto(String nombre, int cantidad, double valor) {
-        this.nombre = nombre;
-        this.cantidad = cantidad;
-        this.valor = valor;
+    Cliente(boolean tieneCuenta) {
+        this.tieneCuenta = tieneCuenta;
+        this.id = idCounter++;
     }
 }
 
-class Moneda { //Le junte las clases en el main
-    double denominacion;
-    int cantidad;
+class Caja {//Le junte las clases en el main
+    boolean ocupada;
+    double[] tipos = {0.50, 1, 2, 5, 10, 20, 100, 200, 500, 1000};
+    int[] cantidades = new int[tipos.length];
 
-    Moneda(double denominacion, int cantidad) {
-        this.denominacion = denominacion;
-        this.cantidad = cantidad;
-    }
-}
-
-class dispensadorDeAlimentos { //Le junte las clases en el main
-    Queue<Producto> productos = new LinkedList<>();
-    Moneda[] monedas = new Moneda[5];
-
-    public dispensadorDeAlimentos() {
-        // Agregar monedas
-        double[] denominaciones = {10, 5, 2, 1, 0.50};
-        for (int i = 0; i < denominaciones.length; i++) {
-            monedas[i] = new Moneda(denominaciones[i], 13);
+    public Caja() {
+        for (int i = 0; i < tipos.length; i++) {
+            cantidades[i] = 5; 
         }
     }
 
-    public void agregarProducto(Producto producto) {
-        if (productos.size() < 10) {
-            productos.add(producto);
-            System.out.println("Producto agregado: " + producto.nombre);
-        } else {
-            System.out.println("La cola de productos está llena.");
-        }
-    }
-
-    public void mostrarProductos() {
-        int i = 1;
-        for (Producto producto : productos) {
-            System.out.println(i + ". " + producto.nombre + " - Cantidad: " + producto.cantidad + " - Valor: $" + producto.valor);
-            i++;
-        }
-    }
-
-    public void elegirProducto(int numProducto, double monto) {
-        if (productos.isEmpty()) {
-            System.out.println("No hay productos disponibles.");
-            return;
-        }
-        Producto productoElegido = null;
-        int i = 1;
-        for (Producto producto : productos) {
-            if (i == numProducto) {
-                productoElegido = producto;
+    public void depositar(double tipo, int cantidad) {
+        for (int i = 0; i < tipos.length; i++) {
+            if (tipos[i] == tipo) {
+                cantidades[i] += cantidad;
                 break;
             }
-            i++;
         }
-        if (productoElegido == null) {
-            System.out.println("Producto no encontrado.");
-            return;
-        }
-        if (monto < productoElegido.valor) {
-            System.out.println("Monto insuficiente. El producto cuesta $" + productoElegido.valor);
-            return;
-        }
-        productoElegido.cantidad--;
-        if (productoElegido.cantidad == 0) {
-            productos.remove(productoElegido);
-        }
-        System.out.println("Has elegido: " + productoElegido.nombre);
-        sacarProducto(productoElegido);
-        devolverCambio(monto - productoElegido.valor);
     }
 
-    public void devolverCambio(double monto) {
-        System.out.println("Devolviendo cambio: $" + monto);
-        for (Moneda moneda : monedas) {
-            while (monto >= moneda.denominacion && moneda.cantidad > 0) {
-                monto -= moneda.denominacion;
-                moneda.cantidad--;
+    public boolean retirar(double monto) {
+        double total = 0;
+        for (int i = 0; i < tipos.length; i++) {
+            total += tipos[i] * cantidades[i];
+        }
+        if (monto > total) {
+            System.out.println("No hay suficiente dinero en la caja.");
+            return false;
+        }
+        for (int i = tipos.length - 1; i >= 0; i--) {
+            while (monto >= tipos[i] && cantidades[i] > 0) {
+                monto -= tipos[i];
+                cantidades[i]--;
             }
         }
         if (monto > 0) {
-            System.out.println("No se pudo devolver todo el cambio. Cambio restante: $" + monto);
+            System.out.println("No se pudo retirar el monto exacto.");
+            return false;
+        }
+        return true;
+    }
+}
+
+class Banco { //Le junte las clases en el main
+    Queue<Cliente> clientesConCuenta = new LinkedList<>();
+    Queue<Cliente> clientesSinCuenta = new LinkedList<>();
+    Caja[] cajas = {new Caja(), new Caja(), new Caja(), new Caja()};
+
+    public void agregarCliente(Cliente cliente) {
+        if (cliente.tieneCuenta) {
+            clientesConCuenta.add(cliente);
+            System.out.println("Cliente con cuenta agregado a la cola. ID: " + cliente.id);
+        } else {
+            clientesSinCuenta.add(cliente);
+            System.out.println("Cliente sin cuenta agregado a la cola. ID: " + cliente.id);
         }
     }
 
-    public void sacarProducto(Producto producto) {
-        System.out.println("Has sacado: " + producto.nombre);
+    public void mostrarClientes() {
+        System.out.println("Clientes con cuenta:");
+        for (Cliente cliente : clientesConCuenta) {
+            System.out.println("ID: " + cliente.id);
+        }
+        System.out.println("Clientes sin cuenta:");
+        for (Cliente cliente : clientesSinCuenta) {
+            System.out.println("ID: " + cliente.id);
+        }
+    }
+
+    public void atenderCliente(int idCliente, int numCaja) {
+        if (numCaja < 1 || numCaja > 4) {
+            System.out.println("Número de caja no válido.");
+            return;
+        }
+        Caja caja = cajas[numCaja - 1];
+        if (caja.ocupada) {
+            System.out.println("La caja " + numCaja + " está ocupada.");
+            return;
+        }
+        Cliente cliente = null;
+        for (Cliente c : clientesConCuenta) {
+            if (c.id == idCliente) {
+                cliente = c;
+                clientesConCuenta.remove(c);
+                break;
+            }
+        }
+        if (cliente == null) {
+            for (Cliente c : clientesSinCuenta) {
+                if (c.id == idCliente) {
+                    cliente = c;
+                    clientesSinCuenta.remove(c);
+                    break;
+                }
+            }
+        }
+        if (cliente != null) {
+            caja.ocupada = true;
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Atendiendo cliente ID: " + cliente.id + " en la caja " + numCaja);
+            System.out.println("1. Depósito");
+            System.out.println("2. Retiro");
+            System.out.print("Elige una opción: ");
+            int opcion = scanner.nextInt();
+            switch (opcion) {
+                case 1:
+                    System.out.print("Ingresa el tipo de billete/moneda: ");
+                    double tipo = scanner.nextDouble();
+                    System.out.print("Ingresa la cantidad: ");
+                    int cantidad = scanner.nextInt();
+                    caja.depositar(tipo, cantidad);
+                    break;
+                case 2:
+                    System.out.print("Ingresa el monto a retirar: ");
+                    double monto = scanner.nextDouble();
+                    if (caja.retirar(monto)) {
+                        System.out.println("Retiro exitoso.");
+                    } else {
+                        System.out.println("Retiro fallido.");
+                    }
+                    break;
+                default:
+                    System.out.println("Opción no válida.");
+            }
+            caja.ocupada = false;
+        } else {
+            System.out.println("Cliente no encontrado en la cola.");
+        }
+    }
+
+    public void ingresarDineroCaja(int numCaja, double tipo, int cantidad) {
+        if (numCaja < 1 || numCaja > 4) {
+            System.out.println("Número de caja no válido.");
+            return;
+        }
+        cajas[numCaja - 1].depositar(tipo, cantidad);
+        System.out.println("Dinero ingresado a la caja " + numCaja);
     }
 
     public void imprimirEstado() {
-        System.out.println("Estado del dispensador:");
-        System.out.println("Productos disponibles: " + productos.size());
-        for (Producto producto : productos) {
-            System.out.println(producto.nombre + " - Cantidad: " + producto.cantidad + " - Valor: $" + producto.valor);
-        }
-        System.out.println("Monedas disponibles:");
-        for (Moneda moneda : monedas) {
-            System.out.println("Denominación: $" + moneda.denominacion + " - Cantidad: " + moneda.cantidad);
+        System.out.println("Estado del banco:");
+        System.out.println("Clientes con cuenta en cola: " + clientesConCuenta.size());
+        System.out.println("Clientes sin cuenta en cola: " + clientesSinCuenta.size());
+        for (int i = 0; i < cajas.length; i++) {
+            System.out.println("Caja " + (i + 1) + " - Ocupada: " + cajas[i].ocupada);
+            System.out.println("Tipos de billetes/monedas y cantidades:");
+            for (int j = 0; j < cajas[i].tipos.length; j++) {
+                System.out.println("Tipo: $" + cajas[i].tipos[j] + " - Cantidad: " + cajas[i].cantidades[j]);
+            }
         }
     }
 }
