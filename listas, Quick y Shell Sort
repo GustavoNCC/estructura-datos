@@ -1,0 +1,105 @@
+package listas;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+//Use Chat-Gpt para "partition" y para explicacion de los metodos Quick y Shell Sort
+
+public class principal {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<Integer> list = new ArrayList<>();
+
+        System.out.println("Ingresa los elementos de la lista (ingresa -1 para terminar):");
+        while (true) {
+            int num = scanner.nextInt();
+            if (num == -1) {
+                break;
+            }
+            list.add(num);
+        }
+
+        System.out.println("Lista original: " + list);
+
+        // Ordenamiento Shell Sort
+        List<Integer> shellSortedList = new ArrayList<>(list);
+        shellSort(shellSortedList);
+        System.out.println("Lista ordenada con Shell Sort: " + shellSortedList);
+
+        // Ordenamiento Quick Sort
+        List<Integer> quickSortedList = new ArrayList<>(list);
+        quickSort(quickSortedList, 0, quickSortedList.size() - 1);
+        System.out.println("Lista ordenada con Quick Sort: " + quickSortedList);
+
+        // Búsqueda Binaria
+        System.out.print("Ingresa el elemento a buscar: ");
+        int target = scanner.nextInt();
+        int result = busqueda(shellSortedList, target);
+        if (result != -1) {
+            System.out.println("Elemento " + target + " encontrado en la posición: " + result);
+        } else {
+            System.out.println("Elemento " + target + " no encontrado.");
+        }
+
+        scanner.close();
+    }
+
+    
+ 
+    public static void shellSort(List<Integer> list) {
+        int n = list.size();
+        for (int gap = n / 2; gap > 0; gap /= 2) {
+            for (int i = gap; i < n; i++) {
+                int temp = list.get(i);
+                int j;
+                for (j = i; j >= gap && list.get(j - gap) > temp; j -= gap) {
+                    list.set(j, list.get(j - gap));
+                }
+                list.set(j, temp);
+            }
+        }
+    }
+
+    public static int busqueda(List<Integer> list, int target) {
+        int left = 0;
+        int right = list.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (list.get(mid) == target) {
+                return mid;
+            } else if (list.get(mid) < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+    
+    public static void quickSort(List<Integer> list, int low, int high) {
+        if (low < high) {
+            int pi = partition(list, low, high);
+            quickSort(list, low, pi - 1);
+            quickSort(list, pi + 1, high);
+        }
+    }
+
+    public static int partition(List<Integer> list, int low, int high) {
+        int pivot = list.get(high);
+        int i = (low - 1);
+        for (int j = low; j < high; j++) {
+            if (list.get(j) <= pivot) {
+                i++;
+                int temp = list.get(i);
+                list.set(i, list.get(j));
+                list.set(j, temp);
+            }
+        }
+        int temp = list.get(i + 1);
+        list.set(i + 1, list.get(high));
+        list.set(high, temp);
+        return i + 1;
+    }
+}
