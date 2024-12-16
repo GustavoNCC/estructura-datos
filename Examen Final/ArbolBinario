@@ -1,0 +1,98 @@
+
+
+class Nodo {
+    int valor;
+    Nodo izquierdo, derecho;
+
+    public Nodo(int valor) {
+        this.valor = valor;
+        izquierdo = derecho = null;
+    }
+}
+
+class ArbolBinario {
+    Nodo raiz;
+
+
+    public void agregarNodo(int valor) {
+        raiz = agregarNodoRecursivo(raiz, valor);
+    }
+
+    private Nodo agregarNodoRecursivo(Nodo raiz, int valor) {
+        if (raiz == null) {
+            return new Nodo(valor);
+        }
+        if (valor < raiz.valor) {
+            raiz.izquierdo = agregarNodoRecursivo(raiz.izquierdo, valor);
+        } else if (valor > raiz.valor) {
+            raiz.derecho = agregarNodoRecursivo(raiz.derecho, valor);
+        }
+        return raiz;
+    }
+}
+
+public void preOrden() {
+    preOrdenRecursivo(raiz);
+}
+
+private void preOrdenRecursivo(Nodo raiz) {
+    if (raiz != null) {
+        System.out.print(raiz.valor + " ");
+        preOrdenRecursivo(raiz.izquierdo);
+        preOrdenRecursivo(raiz.derecho);
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        ArbolBinario arbol = new ArbolBinario();
+
+
+        int valor = 67;
+        arbol.agregarNodo(valor);
+        valor = 43;
+        arbol.agregarNodo(valor);
+        valor = 80;
+        arbol.agregarNodo(valor);
+        valor = 11;
+        arbol.agregarNodo(valor);
+        valor = 55;
+        arbol.agregarNodo(valor);
+        valor = 70;
+        arbol.agregarNodo(valor);
+        valor = 92;
+        arbol.agregarNodo(valor);
+        valor = 5;
+        arbol.agregarNodo(valor);
+        valor = 13;
+        arbol.agregarNodo(valor);
+        valor = 50;
+        arbol.agregarNodo(valor);
+        valor = 56;
+        arbol.agregarNodo(valor);
+        valor = 68;
+        arbol.agregarNodo(valor);
+        valor = 74;
+        arbol.agregarNodo(valor);
+        valor = 90;
+        arbol.agregarNodo(valor);
+        valor = 95;
+        arbol.agregarNodo(valor);
+
+
+
+        System.out.println("Recorrido en preorden del árbol binario:");
+        arbol.preOrden();
+        System.out.println("Recorrido en postorden del árbol binario:");
+        arbol.postorden();
+        System.out.println("Recorrido en inorden del árbol binario:");
+        arbol.inorden();
+
+    }
+
+
+
+
+
+}
