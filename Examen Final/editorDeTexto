@@ -1,0 +1,58 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+
+public class Main {
+
+    public static void main(String[] args) {
+        ArrayList<String> lista = new ArrayList<>();
+        Scanner scanner = new Scanner(System.in);
+        int opcion=3;
+
+
+        if ( opcion == 3 ) {
+            opcion = 0;
+            System.out.print("Ingresa una palabra: ");
+            String palabra = scanner.nextLine();
+            lista.add(palabra);
+            System.out.println("Desea continuar: 1-SI 2-NO");
+            opcion = scanner.nextInt();
+            if (opcion==1){
+                System.out.print("Ingresa una palabra: ");
+                String palabra1 = scanner.nextLine();
+                lista.add(palabra1);
+                opcion=3;
+                System.out.println("Desea editar una de las dos ultimas palabras?: 1-SI 2-NO");
+                int opcion1 = scanner.nextInt();
+                if(opcion1==1){
+                    System.out.println("Cual palabra?: 1-Penultima 2-Ultima");
+                    int opcion2 = scanner.nextInt();
+                    if(opcion2==1){
+                        lista.remove(palabra);
+                        System.out.print("Reescriba la palabra: ");
+                        palabra = scanner.nextLine();
+                        lista.add(palabra);
+                        System.out.println("La lista es:"+lista);
+                    }else{
+                        lista.remove(palabra1);
+                        System.out.print("Reescriba la palabra: ");
+                        palabra1 = scanner.nextLine();
+                        lista.add(palabra1);
+                        System.out.println("La lista es:"+lista);
+                    }
+                }else{
+                    System.out.println("La lista es:"+lista);
+                }
+            }else{
+                System.out.println("La lista es:"+ lista);
+            }
+        }
+
+
+
+
+
+
+        scanner.close();
+    }
+
+}
