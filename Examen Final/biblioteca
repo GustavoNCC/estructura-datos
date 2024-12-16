@@ -1,0 +1,23 @@
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Stack;
+
+public class libreria {
+
+    Stack<Integer> pilaClaves = new Stack<>();
+    String constante = "ISBN";
+    ArrayList<String> lista = new ArrayList<>();
+    Random random = new Random();
+
+        for(int i = 0;i< 1;i++)
+    {
+        pilaClaves.push(random.nextInt(1970, 2007) + 1);
+    }
+
+
+
+          lista.add(constante + "-" + pilaClaves "-" + numeroLibro);
+
+
+        System.out.print(lista);
+}
